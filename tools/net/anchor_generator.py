@@ -87,19 +87,19 @@ def Anchor_generatorV2(image_feas, radar_points_xy, sizes=[4,2,0.5],ratios=[3,1,
     # Generate `boxes_per_pixel` number of heights and widths that are later
     # used to create anchor box corner coordinates (xmin, xmax, ymin, ymax)
     
-    w = torch.cat((size_tensor * torch.sqrt(ratio_tensor[0]),
-                sizes[0] * torch.sqrt(ratio_tensor[1:])))\
+    w = torch.cat((size_tensor * ratio_tensor[0],
+                sizes[0] * ratio_tensor[1:]))\
                 * (in_height / in_width)  # Handle rectangular inputs
     print(w)
-    h = torch.cat((size_tensor / torch.sqrt(ratio_tensor[0]),
-                sizes[0] / torch.sqrt(ratio_tensor[1:])))
+    h = torch.cat((size_tensor / ratio_tensor[0],
+                sizes[0] / ratio_tensor[1:]))
     # Divide by 2 to get half height and half width
     anchor_manipulations = torch.stack((-w, -h, w, h)).T
     # print('anchor manipulations is:',anchor_manipulations)
     # Each center point will have `boxes_per_pixel` number of anchor boxes, so
     # generate a grid of all anchor box centers with `boxes_per_pixel` repeats
     out_grid = torch.stack([shift_x, shift_y, shift_x, shift_y],
-                dim=1).repeat_interleave(boxes_per_pixel, dim=0) 
+                dim=1)
     print('out grid is:', out_grid)
     output = out_grid + anchor_manipulations
     return output.unsqueeze(0)
